@@ -1,5 +1,6 @@
 **/node_modules
 **/.upm
+**/dist
 
 **/.DS_Store
 **/.env
