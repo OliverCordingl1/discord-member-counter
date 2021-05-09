@@ -101,21 +101,26 @@ client.on('message', (message: Discord.Message) => {
 	const command: Command = new Command(message.content);
 	switch(command.command) {
 	case 'count':
-		const firstKey = client.guilds.cache.firstKey();
-		if (!firstKey) return;
-		countMembers(client, firstKey)
+		const guildID = message.guild?.id;
+		if (!guildID) return;
+		countMembers(client, guildID)
 			.then((members: guildMemberCount | null) => {
 				const embed: Discord.MessageEmbed = new Discord.MessageEmbed();
 				if (!members) {
 					embed
-						.setTitle(`**Member Counts for ${message.guild?.name}**`)
-						.setColor('GREEN')
+						.setTitle(`**Error counting members in ${message.guild?.name}**`)
+						.setColor('DARK_RED')
 						.setAuthor(`${client.user?.username}`)
+						
 				} else {
 					embed
-						.setTitle(`**Member Counts for ${message.guild?.name}s**`)
-						.setColor('GREEN')
-						.setAuthor(`${client.user?.username}`)
+						.setTitle(`***Member Counts for ${message.guild?.name}***`)
+						.setColor('DARK_GREEN')
+						.setFooter(`${client.user?.username}`)
+						.setThumbnail(message.guild?.iconURL() || '')
+						.addField('**HUMAN MEMBERS:**', `\`${members.humanMembers}\``, true)
+						.addField('**BOT MEMBERS:**', `\`${members.botMembers}\``, true)
+						.addField('**TOTAL MEMBERS:**', `\`${members.totalMembers}\``, true);
 				}
 
 				message.channel.send(embed);
