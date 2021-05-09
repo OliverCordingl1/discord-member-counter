@@ -1,6 +1,6 @@
 {
   "main": "dist/index.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Counts people in a discord server",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/index.ts",
