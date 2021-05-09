@@ -1,11 +1,12 @@
-import { Client, GuildMember, PartialGuildMember } from "discord.js";
+import { GuildMemberRemoveEvent } from '../events';
+import { setStatus } from '../Modules';
 
-const e = {
+const e: GuildMemberRemoveEvent = {
 	name: 'guildMemberRemove',
 	once: false,
-	execute (_member: GuildMember | PartialGuildMember, client: Client) {
+	execute(client, {}): void {
 		setStatus(client, client.guilds.cache.size);
 	}
 };
 
-module.exports = e;
+export default e;

@@ -1,13 +1,17 @@
-import { Client, Message } from "discord.js";
-import { Command } from "../Command";
 
-const e = {
+import Command from "../Command";
+import { MessageEvent } from "../events";
+import { MessageEmbed } from "discord.js";
+import { IGuildMemberCount, countMembers } from "../Modules";
+import Settings from "../Settings";
+
+const e: MessageEvent = {
 	name: 'message',
 	once: false,
-	execute (message: Message, client: Client) {
+	execute(client, { message }) {
 		if (message.author.bot) return;
 		if (message.channel.type === 'dm') return;
-		if (!message.content.startsWith(BOT_PREFIX)) return;
+		if (!message.content.startsWith(Settings.prefix)) return;
 
 		const command: Command = new Command(message.content);
 		switch(command.command) {
@@ -15,8 +19,8 @@ const e = {
 			const guildID = message.guild?.id;
 			if (!guildID) return;
 			countMembers(client, guildID)
-				.then((members: guildMemberCount | null) => {
-					const embed: Discord.MessageEmbed = new Discord.MessageEmbed();
+				.then((members: IGuildMemberCount | null) => {
+					const embed: MessageEmbed = new MessageEmbed();
 					if (!members) {
 						embed
 							.setTitle(`**Error counting members in ${message.guild?.name}**`)
@@ -40,4 +44,4 @@ const e = {
 	}
 };
 
-module.exports = e;
+export default e;

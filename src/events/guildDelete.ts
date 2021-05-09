@@ -1,9 +1,10 @@
-import { Client, Guild } from "discord.js";
+import { GuildDeleteEvent } from "../events";
+import { setStatus } from "../Modules";
 
-const e = {
+const e: GuildDeleteEvent = {
 	name: 'guildDelete',
 	once: false,
-	execute (guild: Guild, client: Client) {
+	execute(client, { guild }): void {
 		if (!guild.available) return;
 
 		setStatus(client, client.guilds.cache.size);
@@ -12,4 +13,4 @@ const e = {
 	}
 };
 
-module.exports = e;
+export default e;

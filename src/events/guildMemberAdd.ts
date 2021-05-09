@@ -1,11 +1,13 @@
-import { Client, GuildMember, PartialGuildMember } from "discord.js";
+import { GuildMemberAddEvent } from "../events";
+import { setStatus } from "../Modules";
 
-const e = {
+const e: GuildMemberAddEvent = {
 	name: 'guildMemberAdd',
 	once: false,
-	execute (_member: GuildMember | PartialGuildMember, client: Client) {
+	execute(client, {}): void {
 		setStatus(client, client.guilds.cache.size);
-	}
+		return;
+	},
 };
 
-module.exports = e;
+export default e;

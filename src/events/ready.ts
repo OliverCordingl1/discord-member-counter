@@ -1,9 +1,10 @@
-import { Client } from "discord.js";
+import { ReadyEvent } from "../events";
+import { setStatus } from "../Modules";
 
-const e = {
+const e: ReadyEvent = {
 	name: 'ready',
 	once: true,
-	execute (client: Client) {
+	execute(client) {
 		const { size } : { size: number } = client.guilds.cache;
 
 		setStatus(client, size);
@@ -12,4 +13,4 @@ const e = {
 	}
 };
 
-module.exports = e;
+export default e;

@@ -1,9 +1,10 @@
-import { Client, Guild } from "discord.js";
+import { GuildCreateEvent } from "../events";
+import { setStatus } from "../Modules";
 
-const e = {
+const e: GuildCreateEvent = {
 	name: 'guildCreate',
 	once: false,
-	execute (guild: Guild, client: Client) {
+	execute(client, { guild }): void {
 		if (!guild.available) return;
 
 		setStatus(client, client.guilds.cache.size);
@@ -11,4 +12,4 @@ const e = {
 	}
 };
 
-module.exports = e;
+export default e;

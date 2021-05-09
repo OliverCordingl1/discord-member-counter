@@ -1,4 +1,5 @@
-export class Command {
+import Settings from "./Settings";
+export default class Command {
 	private fullMessage: string;
 	private fullCommand: string[];
 	command: string;
@@ -7,7 +8,7 @@ export class Command {
 	constructor(c: string) {
 		this.fullMessage = c;
 		this.fullCommand = this.fullMessage.split(' ');
-		this.command = this.fullCommand[0].slice(BOT_PREFIX.length);
+		this.command = this.fullCommand[0].slice(Settings.prefix.length);
 		this.args = this.fullCommand.slice(1);
 	}
 }

@@ -7,153 +7,24 @@ if (!process.env.DISCORD_API_TOKEN) {
 }
 
 import * as Discord from 'discord.js';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
+import { IEvent, parseArgs } from './events';
+
 const client:Discord.Client = new Discord.Client();
 
-const BOT_PREFIX = '+-';
-
-interface guildMemberCount {
-	totalMembers: number;
-	botMembers: number;
-	humanMembers: number;
-}
-
-function setStatus(bot: Discord.Client, guildSize: number): void {
-	if (guildSize === 0) {
-		bot.user?.setPresence({
-			status: 'idle',
-			activity: {
-				name: 'Lonely :(',
-			},
-		});
-	} else if (guildSize > 1) {
-		bot.user?.setPresence({
-			status: 'online',
-			activity: {
-				name: `Running on ${guildSize} servers`,
-			},
-		});
-	} else if (guildSize === 1) {
-		const firstKey = bot.guilds.cache.firstKey();
-		if (!firstKey) return;
-		countMembers(bot, firstKey)
-			.then((members: guildMemberCount | null) => {
-				bot.user?.setPresence({
-					status: 'online',
-					activity: {
-						name: `${members?.humanMembers || 'UNKNOWN'} members`,
-					},
-				});
-
-			});
-	}
-}
-
-function countMembers(bot: Discord.Client, guildID: Discord.Snowflake): Promise<guildMemberCount | null> {
-	return new Promise((resolve) => {
-		const guild: Discord.Guild | undefined = bot.guilds.cache.get(guildID);
-		if (!guild || !guild.available) resolve(null);
-
-		const totalMembers: number = guild?.memberCount || 0;
-		let botMembers: number;
-		let humanMembers: number;
-
-		guild?.members.fetch()
-			.then((members: Discord.Collection<Discord.Snowflake, Discord.GuildMember>) => {
-				botMembers = members.filter((member: Discord.GuildMember) => member.user.bot).size;
-				humanMembers = totalMembers - botMembers;
-
-				resolve({
-					totalMembers: Math.abs(totalMembers),
-					botMembers: Math.abs(botMembers),
-					humanMembers,
-				});
-			});
+const eventPath = resolve(__dirname, 'events');
+readdirSync(eventPath)
+	.filter(filename => filename.endsWith('js') || filename.endsWith('ts'))
+	.forEach(async (filename, index, list) => {
+		const event: IEvent = (await import(resolve(eventPath, filename))).default;
+		if (event.once)
+			client.once(event.name, (...args) =>
+				event.execute(client, parseArgs(event.name, args)));
+		else
+			client.on(event.name, (...args) =>
+				event.execute(client, parseArgs(event.name, args)));
+		console.log(`Loaded event: \`${event.name}\`${event.once ? ' once' : ''}. (${index + 1} / ${list.length})`)
 	});
-}
-
-client.on('ready', () => {
-	const { size } : { size: number } = client.guilds.cache;
-
-	setStatus(client, size);
-
-	console.log(`Hey, look! I'm alive on ${size} servers!`);
-});
-
-class Command {
-	private fullMessage: string;
-	private fullCommand: string[];
-	command: string;
-	args: string[];
-
-	constructor(c: string) {
-		this.fullMessage = c;
-		this.fullCommand = this.fullMessage.split(' ');
-		this.command = this.fullCommand[0].slice(BOT_PREFIX.length);
-		this.args = this.fullCommand.slice(1);
-	}
-}
-
-client.on('message', (message: Discord.Message) => {
-	if (message.author.bot) return;
-	if (message.channel.type === 'dm') return;
-	if (!message.content.startsWith(BOT_PREFIX)) return;
-
-	const command: Command = new Command(message.content);
-	switch(command.command) {
-	case 'count':
-		const guildID = message.guild?.id;
-		if (!guildID) return;
-		countMembers(client, guildID)
-			.then((members: guildMemberCount | null) => {
-				const embed: Discord.MessageEmbed = new Discord.MessageEmbed();
-				if (!members) {
-					embed
-						.setTitle(`**Error counting members in ${message.guild?.name}**`)
-						.setColor('DARK_RED')
-						.setAuthor(`${client.user?.username}`)
-						
-				} else {
-					embed
-						.setTitle(`***Member Counts for ${message.guild?.name}***`)
-						.setColor('DARK_GREEN')
-						.setFooter(`${client.user?.username}`)
-						.setThumbnail(message.guild?.iconURL() || '')
-						.addField('**HUMAN MEMBERS:**', `\`${members.humanMembers}\``, true)
-						.addField('**BOT MEMBERS:**', `\`${members.botMembers}\``, true)
-						.addField('**TOTAL MEMBERS:**', `\`${members.totalMembers}\``, true);
-				}
-
-				message.channel.send(embed);
-			});
-	}
-});
-
-client.on('guildCreate',	(guild: Discord.Guild) => {
-	if (!guild.available) return;
-
-	setStatus(client, client.guilds.cache.size);
-	console.log(`Added to \`${guild.name}\` [Owner: \`${guild.owner?.displayName}\`]`);
-});
-
-client.on('guildDelete',	(guild: Discord.Guild) => {
-	if (!guild.available) return;
-
-	setStatus(client, client.guilds.cache.size);
-
-	console.log(`Removed from \`${guild.name}\` [Owner: \`${guild.owner?.displayName}\`]`);
-});
-
-client.on('guildMemberAdd', (_member: Discord.GuildMember | Discord.PartialGuildMember) => {
-	setStatus(client, client.guilds.cache.size);
-});
-
-client.on('guildMemberRemove', (_member: Discord.GuildMember | Discord.PartialGuildMember) => {
-	setStatus(client, client.guilds.cache.size);
-});
-
-client.on('invalidated', () => {
-	console.error('Process invalidated!');
-	process.exit(1);
-});
 
 client.login(process.env.DISCORD_API_TOKEN);

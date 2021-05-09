@@ -1,10 +1,12 @@
-const e = {
+import { InvalidatedEvent } from "../events";
+
+const e: InvalidatedEvent = {
 	name: 'invalidated',
 	once: true,
-	execute () {
+	execute(): void {
 		console.error('Process invalidated!');
 		process.exit(1);
 	},
 };
 
-module.exports = e;
+export default e;
