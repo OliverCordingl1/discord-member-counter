@@ -1,5 +1,5 @@
-import { GuildDeleteEvent } from "../events";
-import { setStatus } from "../Modules";
+import { GuildDeleteEvent } from '../events';
+import { setStatus } from '../Modules';
 
 const e: GuildDeleteEvent = {
 	name: 'guildDelete',
@@ -10,7 +10,7 @@ const e: GuildDeleteEvent = {
 		setStatus(client, client.guilds.cache.size);
 
 		console.log(`Removed from \`${guild.name}\` [Owner: \`${guild.owner?.user.username}\`]`);
-	}
+	},
 };
 
 export default e;

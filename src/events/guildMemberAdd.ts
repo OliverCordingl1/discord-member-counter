@@ -1,5 +1,5 @@
-import { GuildMemberAddEvent } from "../events";
-import { setStatus } from "../Modules";
+import { GuildMemberAddEvent } from '../events';
+import { setStatus } from '../Modules';
 
 const e: GuildMemberAddEvent = {
 	name: 'guildMemberAdd',

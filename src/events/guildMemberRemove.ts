@@ -6,7 +6,7 @@ const e: GuildMemberRemoveEvent = {
 	once: false,
 	execute(client, {}): void {
 		setStatus(client, client.guilds.cache.size);
-	}
+	},
 };
 
 export default e;

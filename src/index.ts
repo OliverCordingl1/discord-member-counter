@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 if (!process.env.DISCORD_API_TOKEN) {
-	console.error("Discord API token not set");
+	console.error('Discord API token not set');
 	process.exit(1);
 }
 
@@ -24,7 +24,7 @@ readdirSync(eventPath)
 		else
 			client.on(event.name, (...args) =>
 				event.execute(client, parseArgs(event.name, args)));
-		console.log(`Loaded event: \`${event.name}\`${event.once ? ' once' : ''}. (${index + 1} / ${list.length})`)
+		console.log(`Loaded event: \`${event.name}\`${event.once ? ' once' : ''}. (${index + 1} / ${list.length})`);
 	});
 
 client.login(process.env.DISCORD_API_TOKEN);

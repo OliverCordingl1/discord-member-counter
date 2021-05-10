@@ -1,4 +1,4 @@
-import Settings from "./Settings";
+import Settings from './Settings';
 export default class Command {
 	private fullMessage: string;
 	private fullCommand: string[];

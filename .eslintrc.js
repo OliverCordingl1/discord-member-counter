@@ -12,5 +12,14 @@ module.exports = {
 		// e.g. "@typescript-eslint/explicit-function-return-type": "off",
 		'no-mixed-spaces-and-tabs': 'error',
 		indent: ['error', 'tab'],
+		quotes: ['error', 'single'],
+		'semi-style': ['error', 'last'],
+		semi: ['error', 'always'],
+		'no-extra-semi': 'error',
+		'semi-spacing': ['error', {
+			'before': false,
+			'after': true,
+		}],
+		'comma-dangle': ['error', 'always-multiline'],
 	},
 };

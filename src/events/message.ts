@@ -1,9 +1,9 @@
 
-import Command from "../Command";
-import { MessageEvent } from "../events";
-import { MessageEmbed } from "discord.js";
-import { IGuildMemberCount, countMembers } from "../Modules";
-import Settings from "../Settings";
+import Command from '../Command';
+import { MessageEvent } from '../events';
+import { MessageEmbed } from 'discord.js';
+import { IGuildMemberCount, countMembers } from '../Modules';
+import Settings from '../Settings';
 
 const e: MessageEvent = {
 	name: 'message',
@@ -25,7 +25,7 @@ const e: MessageEvent = {
 						embed
 							.setTitle(`**Error counting members in ${message.guild?.name}**`)
 							.setColor('DARK_RED')
-							.setAuthor(`${client.user?.username}`)
+							.setAuthor(`${client.user?.username}`);
 							
 					} else {
 						embed
@@ -41,7 +41,7 @@ const e: MessageEvent = {
 					message.channel.send(embed);
 				});
 		}
-	}
+	},
 };
 
 export default e;

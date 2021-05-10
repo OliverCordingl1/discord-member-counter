@@ -1,5 +1,5 @@
-import { ReadyEvent } from "../events";
-import { setStatus } from "../Modules";
+import { ReadyEvent } from '../events';
+import { setStatus } from '../Modules';
 
 const e: ReadyEvent = {
 	name: 'ready',
@@ -10,7 +10,7 @@ const e: ReadyEvent = {
 		setStatus(client, size);
 
 		console.log(`Hey, look! I'm alive on ${size} servers!`);
-	}
+	},
 };
 
 export default e;

@@ -1,4 +1,4 @@
-import { InvalidatedEvent } from "../events";
+import { InvalidatedEvent } from '../events';
 
 const e: InvalidatedEvent = {
 	name: 'invalidated',

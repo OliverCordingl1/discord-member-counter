@@ -6,7 +6,7 @@ import {
 	GuildMember,
 	Message,
 	PartialGuildMember,
-} from "discord.js";
+} from 'discord.js';
 
 export interface IEvent {
 	name: string;
