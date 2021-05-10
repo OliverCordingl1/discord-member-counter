@@ -7,6 +7,8 @@ import {
 	Message,
 	PartialGuildMember,
 } from 'discord.js';
+import { readdirSync } from 'fs';
+import * as path from 'path';
 
 export interface IEvent {
 	name: string;
@@ -76,21 +78,12 @@ export interface MessageEvent extends IEvent {
 	execute: (client: Client, args: IMessageArgs) => void;
 }
 
-/****
- * 
- * 	note to self
- * 
- * 
- * the idea is to have an object with bindings to each argument
- * interface that i have just created.
- * 
- * 
- * no idea how to do it. leaving it up to you now :)
- * 
- * 
+/**
+ * Parses arguments for IEvents
+ * @param name the event trigger to parse
+ * @param args an array of arguments to parse
+ * @returns IArgs
  */
-
-
 export function parseArgs(name: string, args: any[]): IArgs {
 	switch (name) {
 	case 'message':
@@ -111,4 +104,27 @@ export function parseArgs(name: string, args: any[]): IArgs {
 	default:
 		return {};
 	}
+}
+
+export function loadEvents(client: Client): Promise<void> {
+	return new Promise((resolve, reject) => {
+		const eventPath = path.resolve(__dirname, 'events');
+		readdirSync(eventPath)
+			.filter(filename => filename.endsWith('js') || filename.endsWith('ts'))
+			.forEach(async (filename, index, list) => {
+				try {
+					const e: IEvent = (await import(path.resolve(eventPath, filename))).default;
+					if (e.once)
+						client.once(e.name, (...args) =>
+							e.execute(client, parseArgs(e.name, args)));
+					else
+						client.on(e.name, (...args) =>
+							e.execute(client, parseArgs(e.name, args)));
+					console.log(`Loaded event: \`${e.name}\`${e.once ? ' once' : ''}. (${index + 1} / ${list.length})`);
+				} catch (error) {
+					reject(error);
+				}
+			});
+		resolve();
+	});
 }
